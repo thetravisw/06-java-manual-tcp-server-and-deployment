@@ -33,9 +33,16 @@ public class ConnectionHandler implements Runnable {
             if (line.startsWith("@quit")) {
                 isRunning = false;
                 this.user.socket.close();
+            } else if (line.startsWith("@list")) {
+                response = listUsers(line);
             }
+            // TODO: implement other command methods
 
             TCPServer.broadcast(this.user.toString() + ": " + response);
         }
+    }
+
+    public String listUsers (String line) {
+        // TODO: implement list users
     }
 }
