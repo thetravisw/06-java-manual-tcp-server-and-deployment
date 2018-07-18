@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 class TCPServer {
-    private static List<User> connections = new ArrayList<>();
+    public static List<User> connections = new ArrayList<>();
 
     // send a message to all open connections
     // stretch-TODO: prevent messages from being broadcast to the same user
@@ -19,6 +19,17 @@ class TCPServer {
                 outToClient.writeBytes(message);
             } catch (IOException e) {
 
+            }
+        }
+    }
+
+    public static void dm (String message, String dmTarget){
+        for (User user : connections){
+            if (user.nickname == dmTarget){
+                try {
+                    DataOutputStream dmToUser = new DataOutputStream(user.socket.getOutputStream());
+                    dmToUser.writeBytes(message);
+                } catch (IOException e) {}
             }
         }
     }
@@ -51,18 +62,9 @@ class TCPServer {
         }
     }
 
-    private static String listUsers(String line) {
-        String response = "";
-
-        for (User user : connections) {
-            response += user.toString() + "\n";
-        }
-
-        return response;
-    }
 
     public static int getPort() {
-        int defaultPort = 6789;
+        int defaultPort = 6790;
 
         String portEnv = System.getenv("USER");
         if (portEnv != null) {
