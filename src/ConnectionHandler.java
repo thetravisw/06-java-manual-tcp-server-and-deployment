@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class ConnectionHandler implements Runnable {
     private User user;
@@ -35,14 +36,43 @@ public class ConnectionHandler implements Runnable {
                 this.user.socket.close();
             } else if (line.startsWith("@list")) {
                 response = listUsers(line);
+            } else if (line.startsWith("@nickname")) {
+                nickname(line);
+            } else if (line.startsWith("@dm")) {
+                dm(line);
             }
+
             // TODO: implement other command methods
 
             TCPServer.broadcast(this.user.toString() + ": " + response);
         }
     }
+    public void dm (String line) {
+        Scanner linescanner = new Scanner(line);
+        linescanner.next();
+        String MessageGoesTo = linescanner.next();
+
+        String dm = "Direct Message from " + this.user.nickname +":";
+        while (linescanner.hasNext()) {
+            dm += " " + linescanner.next();
+        }
+        TCPServer.dm(dm, MessageGoesTo);
+    }
+
+    public void nickname (String line){
+        Scanner linescanner = new Scanner(line);
+        String nickname = linescanner.next();
+        nickname = linescanner.next();
+        this.user.nickname= nickname;
+    }
 
     public String listUsers (String line) {
-        // TODO: implement list users
+        String response = "";
+
+        for (User user : TCPServer.connections) {
+            response += user.toString() + "\n";
+        }
+
+        return response;
     }
 }
